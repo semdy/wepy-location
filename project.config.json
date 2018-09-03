@@ -1,0 +1,16 @@
+{
+	"description": "A miniprogram project built with WePY",
+	"setting": {
+		"urlCheck": false,
+		"es6": false,
+		"postcss": false,
+		"minified": false,
+		"newFeature": true
+	},
+	"compileType": "miniprogram",
+	"appid": "wxa21e83cc5651942e",
+	"projectname": "wepy-invoice",
+	"miniprogramRoot": "./dist",
+	"libVersion": "2.2.5",
+	"condition": {}
+}

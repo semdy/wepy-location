@@ -1,0 +1,260 @@
+<style lang="less">
+  @import "../../less/mixin";
+
+  .site-logo {
+    padding: 20rpx 30rpx;
+  }
+  .logo-img {
+    width: 30%;
+  }
+  .userinfo-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+  }
+
+  .userinfo-wrap {
+    padding-bottom: 20rpx;
+    .avatar {
+      width: 200rpx;
+      height: 200rpx;
+      border: 4rpx solid #ccc;
+      border-radius: 50%;
+      overflow: hidden;
+    }
+    .user-nickname {
+      font-size: 36rpx;
+      padding: 10rpx 0;
+    }
+    .user-copername {
+      color: #888;
+    }
+  }
+
+  .status-table {
+    display: flex;
+    flex-direction: column;
+    flex:1;
+
+    .table-header {
+      .table-cell {
+        font-size: 32rpx;
+      }
+    }
+    .table-cell {
+      &.opt {
+        flex: none;
+        width: 60rpx;
+      }
+    }
+  }
+
+  .status-table-body {
+    flex: 1;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  .bottom-action {
+    display: flex;
+    justify-content: center;
+    padding: 24rpx 0;
+  }
+
+  .add-task-icon {
+    width: 120rpx;
+    height: 120rpx;
+    background-color: #3db73c;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
+
+    &:active {
+      background-color: darken(#3db73c, 10%);
+    }
+  }
+
+  .status-table-empty {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    .empty-icon {
+      width: 240rpx;
+      height: 240rpx;
+    }
+  }
+
+  .task-form {
+    display: flex;
+    align-items: center;
+    padding: 20rpx 0 40rpx;
+  }
+
+  .modal-footer {
+    display: flex;
+    justify-content: flex-end;
+
+    .button {
+      margin-left: 20rpx;
+      width: 7em;
+    }
+  }
+</style>
+<template>
+  <view class="site-logo">
+    <image class="logo-img" src="../../images/logo.png" mode="widthFix"></image>
+  </view>
+  <view class="userinfo-wrap">
+    <view class="avatar">
+      <open-data type="userAvatarUrl"></open-data>
+    </view>
+    <view class="user-nickname">
+      <open-data type="userNickName" lang="zh_CN"></open-data>
+    </view>
+    <view class="user-copername">
+      上海医疗器械有限公司
+    </view>
+  </view>
+
+  <view class="table status-table">
+    <view class="table-row table-header">
+      <veiw class="table-cell">工具箱</veiw>
+      <veiw class="table-cell">任务状态</veiw>
+      <veiw class="table-cell">工具状态</veiw>
+      <veiw class="table-cell">设备状态</veiw>
+      <veiw class="table-cell opt"></veiw>
+    </view>
+
+    <view class="status-table-body status-table-empty" wx:if="{{dataList.length==0}}">
+      <emptyicon name="empty.png" class="empty-icon"></emptyicon>
+    </view>
+
+    <scroll-view scroll-y="true" class="status-table-body" wx:if="{{dataList.length>0}}">
+      <repeat for="{{dataList}}" key="index">
+        <veiw class="table-row" @tap="viewDetail({{item}})">
+          <view class="table-cell">{{item.code}}</view>
+          <view class="table-cell">{{item.taskStatus}}</view>
+          <view class="table-cell">{{item.toolStatus}}</view>
+          <view class="table-cell">{{item.eqStatus}}</view>
+          <veiw class="table-cell opt">
+            <aricon name="arrow-right-o.svg" size="small"></aricon>
+          </veiw>
+        </veiw>
+      </repeat>
+    </scroll-view>
+  </view>
+
+  <view class="bottom-action">
+    <view class="add-task-icon" @tap="preCreateTask">
+      <plusicon name="plus.svg" size="x-large"></plusicon>
+    </view>
+  </view>
+
+  <modal title="创建任务">
+    <view class="task-form">
+      <text>工具箱号：</text>
+      <toolinput border="true" @input.user="toolCodeChange" style="margin-bottom: 0;" />
+    </view>
+    <view class="modal-footer">
+      <cancelbutton type="default" inline="true" @tap.user="closeModal">取消</cancelbutton>
+      <confirmbutton @tap.user="createTask" inline="true">立即创建</confirmbutton>
+    </view>
+  </modal>
+
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import fetch from '../../service/fetch'
+  import Icon from '../../components/icon'
+  import Modal from '../../components/modal'
+  import Button from '../../components/button'
+  import Formitem from '../../components/formitem'
+  import {showError, showToast} from '../../utils/util'
+  import {session} from '../../service/auth'
+
+  export default class Index extends wepy.page {
+    config = {
+      navigationBarTitleText: '主页'
+    }
+
+    components = {
+      aricon: Icon,
+      plusicon: Icon,
+      emptyicon: Icon,
+      modal: Modal,
+      toolinput: Formitem,
+      confirmbutton: Button,
+      cancelbutton: Button
+    }
+
+    data = {
+      dataList: [
+        {
+          code: 'A001',
+          taskStatus: '执行',
+          toolStatus: '可调配',
+          eqStatus: '可调配'
+        },
+        {
+          code: 'A001',
+          taskStatus: '执行',
+          toolStatus: '可调配',
+          eqStatus: '可调配'
+        },
+        {
+          code: 'A001',
+          taskStatus: '执行',
+          toolStatus: '可调配',
+          eqStatus: '可调配'
+        },
+        {
+          code: 'A001',
+          taskStatus: '执行',
+          toolStatus: '可调配',
+          eqStatus: '可调配'
+        }
+      ],
+      toolCode: ''
+    }
+
+    methods = {
+      closeModal () {
+        this.$invoke('modal', 'close')
+      },
+      viewDetail (item) {
+        this.$navigate('/pages/detail/detail')
+      },
+      preCreateTask () {
+        this.$invoke('modal', 'open')
+      },
+      toolCodeChange (value) {
+        this.toolCode = value
+      },
+      createTask () {
+        if (this.toolCode === '') {
+          return showError('请输入工具箱号')
+        }
+        this.$invoke('modal', 'close')
+      }
+    }
+
+    onShow () {
+
+    }
+
+    onHide () {
+
+    }
+
+    onLoad () {
+
+    }
+
+    onUnload () {
+    }
+  }
+</script>

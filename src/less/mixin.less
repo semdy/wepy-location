@@ -1,0 +1,47 @@
+@gcolor: #01458e;
+@large: 96rpx;
+@normal: 72rpx;
+@small: 48rpx;
+
+.flex () {
+  display: -webkit-flex;
+  display: flex;
+}
+
+.inline-flex () {
+  display: -webkit-inline-flex;
+  display: inline-flex;
+}
+
+.flex-center () {
+  .flex();
+  -webkit-align-items: center;
+  align-items: center;
+  -webkit-justify-content: center;
+  justify-content: center;
+}
+
+.inline-flex-center () {
+  .inline-flex();
+  -webkit-align-items: center;
+  align-items: center;
+  -webkit-justify-content: center;
+  justify-content: center;
+}
+
+.flex-h-center () {
+  .flex();
+  -webkit-justify-content: center;
+  justify-content: center;
+}
+
+.flex-v-center () {
+  .flex();
+  -webkit-align-items: center;
+  align-items: center;
+}
+
+.marign-auto () {
+  margin-left: auto;
+  margin-right: auto;
+}

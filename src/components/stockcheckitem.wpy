@@ -1,0 +1,169 @@
+<style type="less">
+  @import "../less/mixin";
+
+  .stock-check-item {
+    .flex();
+    position: relative;
+    background-color: #fff;
+    border:2rpx solid #bbb;
+    border-radius: 20rpx;
+    padding: 20rpx;
+    margin-bottom: 10rpx;
+
+    &.disabled {
+      background-color: #f0f0f0;
+    }
+  }
+
+  .stock-check-item-left {
+    margin-right: 40rpx;
+    text-align: center;
+  }
+
+  .stock-check-item-left-hd {
+    margin-bottom: 20rpx;
+    color: #457199;
+    font-weight: bold;
+  }
+
+  .stock-check-item-left-hd .icon-img {
+    width: 48rpx !important;
+    height: 48rpx !important;
+  }
+
+  .stock-check-item-right {
+    flex:1;
+  }
+
+  .stock-number {
+    .inline-flex-center();
+    display: inline-flex;
+    width: 150rpx;
+    height: 150rpx;
+    background-color: #E1EDF2;
+    border: 2rpx solid #bbb;
+    border-radius: 50%;
+    color: #10458e;
+    font-size: 96rpx;
+  }
+
+  .stock-detail {
+    padding: 20rpx 0;
+  }
+
+  .stock-check-action {
+    .flex();
+    justify-content: space-around;
+    margin-top: 20rpx;
+
+    .button {
+      flex: 1;
+
+      &:first-child {
+        margin-right: 40rpx;
+      }
+    }
+
+    .delete-icon {
+      position: absolute;
+      top: 20rpx;
+      right: 20rpx;
+    }
+  }
+</style>
+<template>
+  <view class="stock-check-item {{stock.status === 'expired' ? 'disabled' : '' }} {{className}}" style="{{style}}" @tap="tap">
+    <view class="stock-check-item-left">
+      <view class="stock-check-item-left-hd">
+        <geoIcon name="stock.png"></geoIcon>
+        <text>{{stock.type}}</text>
+      </view>
+      <view class="stock-number" @tap="stockDetailTap">{{stock.count}}</view>
+      <view class="stock-detail" @tap="stockDetailTap">盘点详情</view>
+    </view>
+
+    <view class="stock-check-item-right">
+      <view class="stock-check-info">盘点任务名称：{{stock.name}}</view>
+      <view class="stock-check-info">盘点任务状态：{{stock.statusText}}</view>
+      <view class="stock-check-info">盘点任务编码：{{stock.code}}</view>
+      <view class="stock-check-info">产品线：{{stock.divisionName}}</view>
+      <view class="stock-check-info">仓库类型：{{stock.stockType}}</view>
+      <view class="stock-check-info">盘点任务创建日期：{{stock.createdAt}}</view>
+      <view class="stock-check-action">
+        <checkButton @tap.user="checkButtonTap" wx:if="{{stock.status==='unSubmit'}}">盘点</checkButton>
+        <view class="button normal primary {{stock.count === 0 ? 'disabled' : ''}}" wx:if="{{stock.status==='unSubmit'}}" @tap="submitButtonTap">
+          提交
+        </view>
+        <block wx:if="{{stock.status!=='expired'}}">
+          <genButton @tap.user="buttonTap" wx:if="{{stock.status==='submit'}}">报告生成中</genButton>
+          <historyButton @tap.user="buttonTap" wx:if="{{stock.status==='reckon'}}">查看报告</historyButton>
+        </block>
+        <delIcon name="trash.png" class="delete-icon"  wx:if="{{stock.status === 'unSubmit'}}" @tap.user="onDelTap"></delIcon>
+      </view>
+    </view>
+
+  </view>
+</template>
+<script>
+  import wepy from 'wepy'
+  import Icon from './icon'
+  import Button from './button'
+
+  export default class StockItem extends wepy.component {
+    props = {
+      style: {
+        type: String,
+        default: ''
+      },
+      className: {
+        type: String,
+        default: ''
+      },
+      stock: {
+        type: Object,
+        default: {}
+      }
+    }
+    components = {
+      geoIcon: Icon,
+      delIcon: Icon,
+      checkButton: Button,
+      submitButton: Button,
+      genButton: Button,
+      historyButton: Button
+    }
+    methods = {
+      tap ($event) {
+        setTimeout(() => {
+          this.$emit('tap', Number(this.$index), $event)
+        })
+      },
+      checkButtonTap ($event) {
+        setTimeout(() => {
+          this.$emit('checkTap', Number(this.$index), $event)
+        })
+      },
+      submitButtonTap ($event) {
+        setTimeout(() => {
+          this.$emit('submitTap', Number(this.$index), $event)
+        })
+      },
+      stockDetailTap ($event) {
+        setTimeout(() => {
+          this.$emit('stockDetailTap', Number(this.$index), $event)
+        })
+      },
+      buttonTap ($event) {
+        setTimeout(() => {
+          console.log(this.$index)
+          this.$emit('buttonTap', Number(this.$index), $event)
+        })
+      },
+      onDelTap ($event) {
+        setTimeout(() => {
+          this.$emit('delTap', Number(this.$index), $event)
+        })
+      }
+    }
+  }
+</script>

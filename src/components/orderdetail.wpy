@@ -1,0 +1,86 @@
+<style type="less">
+  @import "../less/mixin";
+
+  .order-detail-item{
+    position: relative;
+    background-color: #fff;
+    margin-bottom: 20rpx;
+    border:2rpx solid #bbb;
+    border-radius: 20rpx;
+  }
+  .order-detail-item-main {
+    padding: 10rpx 20rpx 10rpx 150rpx;
+  }
+  .order-info-item {
+    padding: 4rpx 0;
+  }
+  .order-detail-item-footer {
+    .flex();
+    justify-content: space-between;
+    border-top: 2rpx solid #bbb;
+    padding: 10rpx 60rpx;
+    margin-left: 16rpx;
+    margin-right: 16rpx;
+    text-align: center;
+    line-height: 1.5;
+  }
+  .order-detail-item-icon {
+    position: absolute;
+    left: 20rpx;
+    top: 20rpx;
+    width: 110rpx;
+    height: 110rpx;
+    border:2rpx solid #bbb;
+    border-radius: 50%;
+    .flex-center();
+  }
+</style>
+<template>
+  <view class="order-detail-item {{className}}" style="{{style}}" @tap="tap">
+    <view class="order-detail-item-main">
+      <view class="order-info-item">型号：H7412378912347</view>
+      <view class="order-info-item">名称：依维莫司洗脱冠状动脉支架系统</view>
+      <view class="order-info-item">备注：之前有余款。</view>
+    </view>
+    <view class="order-detail-item-footer">
+      <view>
+        <view>订购数量</view>
+        <view>12</view>
+      </view>
+      <view>
+        <view>已发数量</view>
+        <view>12</view>
+      </view>
+    </view>
+    <view class="order-detail-item-icon">
+      <orderIcon name="box.svg" size="large"></orderIcon>
+    </view>
+  </view>
+</template>
+<script>
+  import wepy from 'wepy'
+  import Icon from './icon'
+
+  export default class StockItem extends wepy.component {
+    props = {
+      style: {
+        type: String,
+        default: ''
+      },
+      className: {
+        type: String,
+        default: ''
+      }
+    }
+    components = {
+      orderIcon: Icon
+    }
+    data = {
+    }
+    methods = {
+      tap ($event) {
+        this.$emit('tap', Number(this.$index), $event)
+      }
+    }
+  }
+</script>

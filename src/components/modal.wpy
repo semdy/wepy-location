@@ -1,0 +1,114 @@
+<style lang="less">
+  @import "../less/mixin";
+
+  .modal {
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    background-color: rgba(0,0,0,.4);
+    .flex-center();
+    z-index: 1000;
+
+    &.show {
+      display: flex;
+    }
+
+    &.hide {
+      display: none;
+    }
+  }
+
+  .modal-dialog {
+    width: 80%;
+    max-width: 640rpx;
+
+    &.hasTitle {
+      .modal-content {
+        border-top-left-radius: 0;
+        border-top-right-radius: 0;
+      }
+    }
+  }
+
+  .modal-header {
+    .flex-v-center();
+    justify-content: space-between;
+    background-color: #457199;
+    color: #fff;
+    padding-left: 30rpx;
+    padding-right: 20rpx;
+    height: 70rpx;
+    border-top-left-radius: 16rpx;
+    border-top-right-radius: 16rpx;
+  }
+
+  .modal-content {
+    background-color: #fff;
+    padding: 40rpx;
+    border-radius: 16rpx;
+    box-sizing: border-box;
+  }
+
+</style>
+
+<template>
+  <view class="modal" style="{{style}}" wx:if="{{show}}">
+    <view class="modal-dialog {{title !== '' ? 'hasTitle' : ''}}">
+      <view class="modal-header" wx:if="{{title !== ''}}">
+        <text>{{title}}</text>
+        <closeIcon name="close.svg" @tap.user="closeModal"></closeIcon>
+      </view>
+      <view class="modal-content">
+        <slot name="title"></slot>
+        <slot></slot>
+      </view>
+    </view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import Icon from './icon'
+
+  export default class Button extends wepy.component {
+    props = {
+      style: {
+        type: String,
+        default: ''
+      },
+      show: {
+        type: String,
+        default: 'false',
+        coerce: (t) => JSON.parse(t)
+      },
+      title: {
+        type: String,
+        default: ''
+      }
+    }
+
+    components = {
+      closeIcon: Icon
+    }
+
+    data = {}
+
+    open (e) {
+      this.show = true
+      this.$apply()
+    }
+
+    close (e) {
+      this.show = false
+      this.$apply()
+    }
+
+    methods = {
+      closeModal (e) {
+        this.close(e)
+      }
+    }
+  }
+</script>
