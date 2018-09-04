@@ -51,7 +51,7 @@
       <slot></slot>
     </view>
     <image wx:if="{{icon&&iconRight}}" class="list-item-icon {{iconSize}} right" src="../images/{{icon}}" mode="aspectFit"></image>
-    <image wx:if="{{hasArrow||hasArrow==='true'}}" class="list-item-arrow" src="../images/arrow-right-o.svg" mode="aspectFit"></image>
+    <image wx:if="{{hasArrow}}" class="list-item-arrow" src="../images/arrow-right-o.svg" mode="aspectFit"></image>
   </view>
 </template>
 <script>
@@ -61,12 +61,14 @@
     props = {
       icon: String,
       iconLeft: {
-        type: Boolean,
-        default: true
+        type: [Boolean, String],
+        default: true,
+        coerce: (t) => typeof t === 'string' ? JSON.parse(t) : t
       },
       iconRight: {
-        type: Boolean,
-        default: false
+        type: [Boolean, String],
+        default: false,
+        coerce: (t) => typeof t === 'string' ? JSON.parse(t) : t
       },
       iconSize: {
         type: String,
@@ -82,7 +84,8 @@
       },
       hasArrow: {
         type: [Boolean, String],
-        default: false
+        default: false,
+        coerce: (t) => typeof t === 'string' ? JSON.parse(t) : t
       }
     }
     components = {

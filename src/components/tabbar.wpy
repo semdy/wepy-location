@@ -59,9 +59,7 @@
       tabIndex: {
         type: [String, Number],
         default: 0,
-        coerce: function (n) {
-          return +n
-        }
+        coerce: n => +n
       },
       tabBar: {
         type: Object,
@@ -71,7 +69,8 @@
       },
       disabled: {
         type: [Boolean, String],
-        default: false
+        default: false,
+        coerce: (t) => typeof t === 'string' ? JSON.parse(t) : t
       }
     }
 
@@ -91,7 +90,7 @@
       tap (index, $event) {
         index = Number(index)
         if (this.tabIndex === index) return
-        if (!(this.disabled === true || this.disabled === 'true')) {
+        if (!this.disabled) {
           this.tabIndex = index
         }
         this.$emit('tabbarChange', index, $event)

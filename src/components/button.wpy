@@ -86,7 +86,7 @@
 </style>
 
 <template>
-  <view class="button {{inline === 'true' ? 'inline' : ''}} {{disabled ? 'disabled' : ''}} {{size}} {{type}}" style="{{style}}" @tap="tap">
+  <view class="button {{inline ? 'inline' : ''}} {{disabled ? 'disabled' : ''}} {{size}} {{type}}" style="{{style}}" @tap="tap">
     <icon wx:if="{{icon}}" :name="icon" :size="size"></icon>
     <slot></slot>
     {{text}}
@@ -116,13 +116,14 @@
         default: 'primary'
       },
       inline: {
-        type: String,
-        default: 'false'
+        type: [Boolean, String],
+        default: false,
+        coerce: (t) => typeof t === 'string' ? JSON.parse(t) : t
       },
       disabled: {
-        type: String,
-        default: 'false',
-        coerce: (t) => JSON.parse(t)
+        type: [Boolean, String],
+        default: false,
+        coerce: (t) => typeof t === 'string' ? JSON.parse(t) : t
       },
       text: {
         type: String,

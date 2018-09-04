@@ -44,8 +44,9 @@
         default: ''
       },
       disabled: {
-        type: Boolean,
-        default: false
+        type: [Boolean, String],
+        default: false,
+        coerce: (t) => typeof t === 'string' ? JSON.parse(t) : t
       }
     }
 
@@ -57,9 +58,9 @@
     }
 
     methods = {
-      change ($event) {
-        this.value = $event.detail.value
-        this.$emit('datetimechange', $event)
+      change (e) {
+        this.value = e.detail.value
+        this.$emit('datetimechange', this.value, e)
       }
     }
   }

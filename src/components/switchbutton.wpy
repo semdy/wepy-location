@@ -112,17 +112,16 @@
       switchIndex: {
         type: [String, Number],
         default: 0,
-        coerce: function (n) {
-          return +n
-        }
+        coerce: n => +n
       },
       size: {
         type: String,
         default: 'normal'
       },
       disabled: {
-        type: Boolean,
-        default: false
+        type: [Boolean, String],
+        default: false,
+        coerce: t => typeof t === 'string' ? JSON.parse(t) : t
       },
       buttons: {
         type: Array,

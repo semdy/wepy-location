@@ -109,10 +109,10 @@
   </view>
   <view class="userinfo-wrap">
     <view class="avatar">
-      <open-data type="userAvatarUrl"></open-data>
+      <open-data type="userAvatarUrl" />
     </view>
     <view class="user-nickname">
-      <open-data type="userNickName" lang="zh_CN"></open-data>
+      <open-data type="userNickName" lang="zh_CN" />
     </view>
     <view class="user-copername">
       上海医疗器械有限公司
@@ -129,7 +129,7 @@
     </view>
 
     <view class="status-table-body status-table-empty" wx:if="{{dataList.length==0}}">
-      <emptyicon name="empty.png" class="empty-icon"></emptyicon>
+      <emptyicon name="empty.png" class="empty-icon" />
     </view>
 
     <scroll-view scroll-y="true" class="status-table-body" wx:if="{{dataList.length>0}}">
@@ -140,7 +140,7 @@
           <view class="table-cell">{{item.toolStatus}}</view>
           <view class="table-cell">{{item.eqStatus}}</view>
           <veiw class="table-cell opt">
-            <aricon name="arrow-right-o.svg" size="small"></aricon>
+            <aricon name="arrow-right-o.svg" size="small" />
           </veiw>
         </veiw>
       </repeat>
@@ -149,14 +149,14 @@
 
   <view class="bottom-action">
     <view class="add-task-icon" @tap="preCreateTask">
-      <plusicon name="plus.svg" size="x-large"></plusicon>
+      <plusicon name="plus.svg" size="x-large" />
     </view>
   </view>
 
   <modal title="创建任务">
     <view class="task-form">
       <text>工具箱号：</text>
-      <toolinput border="true" @input.user="toolCodeChange" style="margin-bottom: 0;" />
+      <toolinput bordered="true" nomargin="true" @input.user="toolCodeChange" />
     </view>
     <view class="modal-footer">
       <cancelbutton type="default" inline="true" @tap.user="closeModal">取消</cancelbutton>
@@ -168,12 +168,12 @@
 
 <script>
   import wepy from 'wepy'
-  import fetch from '../../service/fetch'
   import Icon from '../../components/icon'
   import Modal from '../../components/modal'
   import Button from '../../components/button'
   import Formitem from '../../components/formitem'
   import {showError, showToast} from '../../utils/util'
+  import fetch from '../../service/fetch'
   import {session} from '../../service/auth'
 
   export default class Index extends wepy.page {
@@ -188,7 +188,8 @@
       modal: Modal,
       toolinput: Formitem,
       confirmbutton: Button,
-      cancelbutton: Button
+      cancelbutton: Button,
+      testbutton: Button
     }
 
     data = {
