@@ -1,7 +1,11 @@
 <style lang="less">
   @import "../../less/mixin";
 
-  .login-logo{
+  page {
+    background-color: #fff;
+  }
+
+  .login-logo {
     margin: 10% 30%;
 
     > image{
@@ -11,91 +15,35 @@
     }
   }
 
-  .login-form{
-    width: 60%;
+  .login-form {
+    width: 90%;
     max-width: 1000rpx;
     .marign-auto();
 
-    .login-actions{
+    .form-item {
+      border-top: 0;
+      border-left: 0;
+      border-right: 0;
+      border-radius: 0;
+    }
+
+    .login-actions {
       margin-top: 100rpx;
-    }
-  }
-
-  .login-footer{
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 80rpx;
-    color: #002178;
-    text-align: center;
-  }
-
-  .input {
-    color: @gcolor;
-  }
-
-  .my-version {
-    text-align: center;
-    font-size: 24rpx;
-    margin-bottom: 20rpx;
-  }
-
-  .code-wrapper {
-    position: relative;
-
-    .code-trigger {
-      position: absolute;
-      padding-left:20rpx;
-      padding-right: 20rpx;
-      height: 100%;
-      top: 0;
-      right: 0;
-      color: #01458e;
-      font-size: 24rpx;
-      line-height: 72rpx;
-      background-color: #fff;
-      text-decoration: underline;
-      z-index: 50;
-
-      &.wait {
-        color: #666;
-        text-decoration: none;
-      }
-    }
-  }
-
-  .login-actions {
-    .flex();
-    justify-content: space-around;
-
-    .button {
-      width: 40%;
     }
   }
 </style>
 <template>
   <view class="container">
     <view class="login-logo">
-      <image src="../../images/login_logo.png" mode="aspectFit"></image>
+      <image src="../../images/logo.png" mode="aspectFit"></image>
     </view>
   </view>
   <view class="login-form">
-    <formitemuser icon="user.svg" placeholder="公司码(不加_01)" :value="username" @input.user="userChange"></formitemuser>
-    <formitemmobile icon="mobile.svg" placeholder="手机号" :value="mobile" @input.user="mobileChange"></formitemmobile>
-    <view class="code-wrapper">
-      <formitemcode placeholder="请输入验证码" :value="code" @input.user="codeChange"></formitemcode>
-      <view wx:if="{{!isCodeGet}}" class="code-trigger" @tap="onGetCode">获取验证码</view>
-      <view wx:if="{{isCodeGet}}" class="code-trigger wait">{{secs}}秒后重新获取</view>
-    </view>
+    <mobileinput type="number" placeholder="手机号" :value="mobile" @input.user="handleMobile" />
+    <passwordinput password="true" placeholder="密码" :value="password" @input.user="handlePassword" />
     <view class="login-actions">
-      <regButton @tap.user="regButtonTap">注册</regButton>
-      <!--<loginButton @tap.user="loginButtonTap">登录</loginButton>-->
-      <button open-type="getUserInfo" class="button primary" @getuserinfo="onGetuserinfo">登录</button>
+      <button open-type="getUserInfo" class="button primary" @getuserinfo="handleLogin">登录</button>
     </view>
-  </view>
-  <view class="login-footer">
-    <view class="my-version">版本号: V1.2</view>
-    <view>服务热线：021-33563567</view>
   </view>
 </template>
 
@@ -103,9 +51,9 @@
   import wepy from 'wepy'
   import Formitem from '../../components/formitem'
   import Button from '../../components/button'
-  import {showError, showToast} from '../../utils/util'
+  import {toast} from '../../utils/util'
   import {login, sendMessage} from '../../service/user'
-  import {session, sessionGroup} from '../../service/auth'
+  import {session} from '../../service/auth'
 
   const SEND_WAIT_TIME = 61
 
@@ -115,16 +63,15 @@
     }
 
     components = {
-      formitemuser: Formitem,
-      formitemmobile: Formitem,
-      formitemcode: Formitem,
-      loginButton: Button,
-      regButton: Button
+      mobileinput: Formitem,
+      passwordinput: Formitem,
+      codeinput: Formitem,
+      loginbutton: Button
     }
 
     data = {
-      username: '',
       mobile: '',
+      password: '',
       code: '',
       secs: SEND_WAIT_TIME,
       isCodeGet: false
@@ -132,78 +79,53 @@
 
     isLogining = false
 
-    computed = {
-
-    }
-
-    events = {
-
-    }
-
     methods = {
-      userChange (e) {
-        this.username = e.detail.value
+      handleMobile (value) {
+        this.mobile = value
       },
-      mobileChange (e) {
-        this.mobile = e.detail.value
+      handlePassword (value) {
+        this.password = value
       },
-      codeChange (e) {
-        this.code = e.detail.value
+      handleCode (value) {
+        this.code = value
       },
-      onGetuserinfo(e) {
+      handleLogin(e) {
         this.doLogin(e.detail.userInfo)
       },
-      onGetCode () {
-        if (!this.username) {
-          return showError('请输入用户名')
-        }
+      async sendCode () {
         if (!this.mobile) {
-          return showError('请输入手机号')
+          return toast.error('请输入手机号')
         }
-        let params = {code: this.username, password: this.mobile, type: 'login'}
-        sendMessage(params).then(res => {
-          showToast(res.message)
-          this.startCountDown()
-        }, err => {
-          showError(err)
-        })
-      },
-      regButtonTap () {
-        this.$navigate('/pages/registry/registry')
+        if (!this.password) {
+          return toast.error('请输入密码')
+        }
+        let params = {phone: this.mobile, password: this.password}
+        let res = await sendMessage(params)
+        toast.success(res.message)
+        this.startCountDown()
       }
     }
 
-    doLogin (userInfo) {
+    async doLogin (userInfo) {
       if (this.isLogining) return
 
-      if (!this.username) {
-        return showError('请输入用户名')
-      }
       if (!this.mobile) {
-        return showError('请输入手机号')
+        return toast.error('请输入手机号')
       }
-      if (!this.code) {
-        return showError('请输入验证码')
+      if (!this.password) {
+        return toast.error('请输入密码')
       }
 
       this.isLogining = true
-
-      let errorHandler = errMsg => {
+      let params = {phone: this.mobile, password: this.password}
+      try {
+        let res = await login(params)
         this.isLogining = false
-        wx.showModal({
-          title: '提示',
-          content: errMsg || '公司码或手机号错误，请重试或联系管理人员',
-          showCancel: false
-        })
-      }
-      let params = {code: this.username, password: this.mobile, validateCode: this.code}
-      login(params).then((res) => {
-        this.isLogining = false
-        let sessionData = Object.assign({}, userInfo, res.data)
-        session.set(sessionData)
-        sessionGroup.add(res.data.user.id, sessionData)
+        session.set({...userInfo, ...res.data})
         this.$switch('/pages/home/home')
-      }, errorHandler)
+      } catch (e) {
+        this.isLogining = false
+      }
     }
 
     startCountDown() {

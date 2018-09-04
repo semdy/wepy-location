@@ -35,7 +35,7 @@
   .modal-header {
     .flex-v-center();
     justify-content: space-between;
-    background-color: #457199;
+    background-color: @gcolor;
     color: #fff;
     padding-left: 30rpx;
     padding-right: 20rpx;
@@ -98,11 +98,13 @@
     open (e) {
       this.show = true
       this.$apply()
+      this.$emit('modalOpen', e)
     }
 
     close (e) {
       this.show = false
       this.$apply()
+      this.$emit('modalClose', e)
     }
 
     methods = {

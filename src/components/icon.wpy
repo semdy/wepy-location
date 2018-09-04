@@ -12,6 +12,10 @@
       width: 72rpx;
       height: 72rpx;
     }
+    &.middle {
+      width: 50rpx;
+      height: 50rpx;
+    }
     &.normal{
       width: 40rpx;
       height: 40rpx;

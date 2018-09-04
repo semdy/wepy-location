@@ -4,10 +4,10 @@ import { redirectToLogin, setLogout } from '../utils/util'
 
 export const login = params => {
   return new Promise((resolve, reject) => {
-    fetch.post('auth/login', params, false)
+    fetch.post('/login', params, false)
       .then(res => {
-        if (res.success === false) {
-          reject(res.message)
+        if (res.status !== 'ok') {
+          reject(res.msg)
         } else {
           setLogout(false)
           resolve(res)

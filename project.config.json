@@ -9,7 +9,7 @@
 	},
 	"compileType": "miniprogram",
 	"appid": "wxa21e83cc5651942e",
-	"projectname": "wepy-invoice",
+	"projectname": "wepy-location",
 	"miniprogramRoot": "./dist",
 	"libVersion": "2.2.5",
 	"condition": {}

@@ -88,8 +88,6 @@
   }
 
   .task-form {
-    display: flex;
-    align-items: center;
     padding: 20rpx 0 40rpx;
   }
 
@@ -99,7 +97,7 @@
 
     .button {
       margin-left: 20rpx;
-      width: 7em;
+      width: 8em;
     }
   }
 </style>
@@ -155,8 +153,9 @@
 
   <modal title="创建任务">
     <view class="task-form">
-      <text>工具箱号：</text>
-      <toolinput bordered="true" nomargin="true" @input.user="toolCodeChange" />
+      <toolinput label="工具箱号：" @input.user="toolCodeChange" />
+      <startaddress label="起始位置：" disabled="true" :value.sync="startAddressName" @tap.user="chooseStartAddr" />
+      <endaddress label="终点位置：" disabled="true" :value.sync="endAddressName" nomargin="true" @tap.user="chooseEndAddr" />
     </view>
     <view class="modal-footer">
       <cancelbutton type="default" inline="true" @tap.user="closeModal">取消</cancelbutton>
@@ -172,9 +171,8 @@
   import Modal from '../../components/modal'
   import Button from '../../components/button'
   import Formitem from '../../components/formitem'
-  import {showError, showToast} from '../../utils/util'
+  import { toast } from '../../utils/util'
   import fetch from '../../service/fetch'
-  import {session} from '../../service/auth'
 
   export default class Index extends wepy.page {
     config = {
@@ -187,6 +185,8 @@
       emptyicon: Icon,
       modal: Modal,
       toolinput: Formitem,
+      startaddress: Formitem,
+      endaddress: Formitem,
       confirmbutton: Button,
       cancelbutton: Button,
       testbutton: Button
@@ -219,7 +219,28 @@
           eqStatus: '可调配'
         }
       ],
-      toolCode: ''
+      toolCode: '',
+      startAddress: null,
+      endAddress: null
+    }
+
+    computed = {
+      startAddressName() {
+        if (!this.startAddress) return ''
+        return this.startAddress.address
+      },
+      endAddressName() {
+        if (!this.endAddress) return ''
+        return this.endAddress.address
+      }
+    }
+
+    events = {
+      modalClose() {
+        this.toolCode = ''
+        this.startAddress = null
+        this.endAddress = null
+      }
     }
 
     methods = {
@@ -227,7 +248,7 @@
         this.$invoke('modal', 'close')
       },
       viewDetail (item) {
-        this.$navigate('/pages/detail/detail')
+        this.$navigate('/pages/detail/detail', {RFID: item.RFID})
       },
       preCreateTask () {
         this.$invoke('modal', 'open')
@@ -237,25 +258,63 @@
       },
       createTask () {
         if (this.toolCode === '') {
-          return showError('请输入工具箱号')
+          return toast.error('请输入工具箱号')
         }
-        this.$invoke('modal', 'close')
+        if (!this.startAddress) {
+          return toast.error('请选择起点位置')
+        }
+        if (!this.endAddress) {
+          return toast.error('请选择终点位置')
+        }
+        this.doTaskCreate(this.toolCode)
+      },
+      chooseStartAddr() {
+        this.chooseLocation('start')
+      },
+      chooseEndAddr() {
+        this.chooseLocation('end')
       }
     }
 
-    onShow () {
-
+    chooseLocation(type) {
+      wx.chooseLocation({
+        success: (res) => {
+          if (type === 'start') {
+            this.startAddress = {
+              address: res.address,
+              latitude: res.latitude,
+              longitude: res.longitude
+            }
+          } else {
+            this.endAddress = {
+              address: res.address,
+              latitude: res.latitude,
+              longitude: res.longitude
+            }
+          }
+          this.$apply()
+        }
+      })
     }
 
-    onHide () {
+    async doTaskCreate(RFID) {
+      let params = {
+        RFID: RFID,
+        startAddress: this.startAddress,
+        endAddress: this.endAddress
+      }
+      await fetch.post('/create/task', params)
+      this.closeModal()
+      this.queryToolbox()
+    }
 
+    async queryToolbox() {
+      let res = await fetch.get('/find/toolbox')
+      console.log(res)
     }
 
     onLoad () {
-
-    }
-
-    onUnload () {
+      this.queryToolbox()
     }
   }
 </script>

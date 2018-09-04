@@ -1,9 +1,7 @@
 <style lang="less">
   @import "../less/mixin";
 
-  .form-item {
-    background-color: #fff;
-    border-radius: 8rpx;
+  .form-item-wrap {
     flex: 1;
     .flex-v-center();
 
@@ -11,13 +9,22 @@
       margin-bottom: 30rpx;
     }
 
+    .form-item-label {
+      margin-right: 10rpx;
+    }
+  }
+
+  .form-item {
+    background-color: #fff;
+    border-radius: 8rpx;
+    flex: 1;
+
     > .input{
+      width: 100%;
       padding: 12rpx 24rpx;
       font-size: 28rpx;
-     /* color: @gcolor;*/
       display: block;
       box-sizing: border-box;
-      flex: 1;
 
       &.large {
         height: @large;
@@ -46,16 +53,21 @@
   }
 </style>
 <template>
-  <view class="form-item {{bordered ? 'bordered' : ''}} {{nomargin ? 'nomargin' : ''}}" style="{{style}}">
-    <iconleft wx:if="{{icon&&iconLeft}}" className="left" :name="icon" :size="size" @tap.user="iconTap"></iconleft>
-    <input wx:if="{{!password}}" type="{{type}}" class="input {{size}}" disabled="{{disabled}}" placeholder="{{placeholder}}" value="{{value}}" @focus="focus" @blur="blur" @change="change" @input="input"/>
-    <input wx:if="{{password}}" password class="input {{size}}" placeholder="{{placeholder}}" value="{{value}}" @focus="focus" @blur="blur" @change="change" @input="input"/>
-    <iconright wx:if="{{icon&&iconRight}}" className="right" :name="icon" :size="size" @tap.user="iconTap"></iconright>
+  <view class="form-item-wrap {{nomargin ? 'nomargin' : ''}}" style="{{style}}">
+    <text wx:if="{{label}}" class="form-item-label">{{label}}</text>
+    <view class="form-item {{bordered ? 'bordered' : ''}}">
+      <iconleft wx:if="{{iconLeft}}" class="left" :name="iconLeft" :size="size" @tap.user="iconTap" />
+      <input password="{{password}}" type="{{type}}" class="input {{size}}" focus="{{focus}}" disabled="{{disabled}}" placeholder="{{placeholder}}" value="{{value}}" maxlength="{{maxlength}}" @tap="tap" @input="input" @focus="focus" @blur="blur" @confirm="confirm" />
+      <iconright wx:if="{{iconRight}}" class="right" :name="iconRight" :size="size" @tap.user="iconTap" />
+    </view>
   </view>
 </template>
 <script>
   import wepy from 'wepy'
   import Icon from './icon'
+
+  const coerce = t =>
+    typeof t === 'string' ? JSON.parse(t) : t
 
   export default class Formitem extends wepy.component {
     props = {
@@ -63,20 +75,9 @@
         type: String,
         default: ''
       },
-      icon: {
-        type: String,
-        default: ''
-      },
-      iconLeft: {
-        type: [Boolean, String],
-        default: true,
-        coerce: (t) => typeof t === 'string' ? JSON.parse(t) : t
-      },
-      iconRight: {
-        type: [Boolean, String],
-        default: false,
-        coerce: (t) => typeof t === 'string' ? JSON.parse(t) : t
-      },
+      label: String,
+      iconLeft: String,
+      iconRight: String,
       size: {
         type: String,
         default: 'normal'
@@ -85,19 +86,21 @@
         type: [String, Number],
         default: ''
       },
-      placeholder: {
-        type: String,
-        default: ''
+      maxlength: {
+        type: [String, Number],
+        default: -1,
+        coerce: v => +v
       },
+      placeholder: String,
       bordered: {
         type: [Boolean, String],
-        default: false,
-        coerce: (t) => typeof t === 'string' ? JSON.parse(t) : t
+        default: true,
+        coerce: coerce
       },
       nomargin: {
         type: [Boolean, String],
         default: false,
-        coerce: (t) => typeof t === 'string' ? JSON.parse(t) : t
+        coerce: coerce
       },
       type: {
         type: String,
@@ -106,12 +109,17 @@
       password: {
         type: [Boolean, String],
         default: false,
-        coerce: (t) => typeof t === 'string' ? JSON.parse(t) : t
+        coerce: coerce
+      },
+      focus: {
+        type: [Boolean, String],
+        default: false,
+        coerce: coerce
       },
       disabled: {
         type: [Boolean, String],
         default: false,
-        coerce: (t) => typeof t === 'string' ? JSON.parse(t) : t
+        coerce: coerce
       }
     }
 
@@ -132,17 +140,20 @@
       }
     }
     methods = {
+      tap (e) {
+        this.$emit('tap', e.detail.value, e)
+      },
+      input (e) {
+        this.$emit('input', e.detail.value, e)
+      },
       focus (e) {
         this.$emit('focus', e.detail.value, e)
       },
       blur (e) {
         this.$emit('blur', e.detail.value, e)
       },
-      change (e) {
-        this.$emit('change', e.detail.value, e)
-      },
-      input (e) {
-        this.$emit('input', e.detail.value, e)
+      confirm (e) {
+        this.$emit('confirm', e.detail.value, e)
       },
       iconTap (e) {
         this.$emit('iconTap', e.detail.value, e)

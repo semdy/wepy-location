@@ -5,6 +5,7 @@
  * @return {String}        格式化过后的时间
  */
 function formatDate (source, format) {
+  source = !(source instanceof Date) ? new Date(source) : source
   const o = {
     'M+': source.getMonth() + 1, // 月份
     'd+': source.getDate(), // 日
@@ -56,30 +57,26 @@ const uuid = function () {
   }
 }()
 
-function showError (msg, duration) {
-  duration = duration || 2000
+let toast = {}
+
+toast.error = (msg, duration = 2000) => {
   return new Promise((resolve, reject) => {
-    setTimeout(function(){
-      wx.showToast({
-        title: msg,
-        icon: 'none',
-        duration: duration
-      })
-      setTimeout(resolve, duration)
-    }, 100)
+    wx.showToast({
+      title: msg,
+      icon: 'none',
+      duration: duration
+    })
+    setTimeout(resolve, duration)
   })
 }
 
-function showToast (msg, duration) {
-  duration = duration || 1500
+toast.success = (msg, duration = 1500) => {
   return new Promise((resolve, reject) => {
-    setTimeout(function() {
-      wx.showToast({
-        title: msg,
-        duration: duration
-      })
-      setTimeout(resolve, duration)
-    }, 50)
+    wx.showToast({
+      title: msg,
+      duration: duration
+    })
+    setTimeout(resolve, duration)
   })
 }
 
@@ -112,4 +109,4 @@ function setLogout (status) {
   isLogouted = status
 }
 
-module.exports = {formatDate, uuid, showError, showToast, confirm, redirectToLogin, setLogout}
+module.exports = {formatDate, uuid, toast, confirm, redirectToLogin, setLogout}

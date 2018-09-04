@@ -159,7 +159,7 @@
   import Button from '../../components/button'
   import Modal from '../../components/modal'
   import Formitem from '../../components/formitem'
-  import {showError, showToast} from '../../utils/util'
+  import {toast} from '../../utils/util'
   import {session, sessionGroup} from '../../service/auth'
   import {login, logout, checkAndSetSessionByUserId} from '../../service/user'
 
@@ -252,14 +252,14 @@
       },
       saveEmailTap () {
         if (!/^\w+@\w+\.\w+$/.test(this.tmpEmail)) {
-          return showError('请正确填写邮箱地址')
+          return toast.error('请正确填写邮箱地址')
         }
         this.updateUser(this.tmpEmail).then(e => {
           this.email = this.tmpEmail
           this.tmpEmail = ''
           this.hideModal()
-          showToast(e.message)
-        }, showError)
+          toast.success(e.message)
+        }, toast.error)
       },
       closeModal () {
         this.hideModal()
@@ -280,7 +280,7 @@
         checkAndSetSessionByUserId(userId).then(() => {
           this.changeSession()
           this.hideSubview()
-        }, showError)
+        }, toast.error)
       },
       emailChange (e) {
         this.tmpEmail = e.detail.value

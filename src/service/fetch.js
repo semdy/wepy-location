@@ -1,9 +1,9 @@
 import wepy from 'wepy'
-import {showError, redirectToLogin} from '../utils/util'
+import {toast, redirectToLogin} from '../utils/util'
 import {version, ref} from '../config'
 import {session} from '../service/auth'
 
-export const serverUrl = 'https://bscqr.qtdatas.com/'
+export const serverUrl = 'http://testsrv.kurite.cn/qs'
 
 const logout = () => {
   session.clear()
@@ -36,21 +36,20 @@ let fetchApi = (url, params = {}, useToken = true, showLoading = true) => {
     }
 
     wepy.request({
-      url: `${serverUrl}api/${url}?version=${version}`,
+      url: /^https?:\/\//.test(url) ? url : `${serverUrl}api/${url}?version=${version}`,
       data: Object.assign({}, params.data, params.method === 'POST' && {ref}),
       method: params.method || 'GET',
       header: Object.assign(defHeaders, params.header)
     })
     .then(res => {
       if (res.statusCode === 200) {
-        /*if (res.data.tokenValid === false) {
-          logout()
-          reject('登录信息过期')
-        } else {*/
+        if (res.data.status === 'ok') {
           resolve(res.data)
-        //}
+        } else {
+          reject(errorMsg = res.data.msg)
+        }
       } else {
-        reject(errorMsg = (res.data.message || '服务器发生错误'))
+        reject(errorMsg = (res.data.msg || '服务器发生错误'))
       }
     })
     .catch(() => {
@@ -59,7 +58,7 @@ let fetchApi = (url, params = {}, useToken = true, showLoading = true) => {
     .finally(() => {
       if (--requestCount === 0) {
         if (errorMsg) {
-          showError(errorMsg)
+          toast.error(errorMsg)
         } else {
           showLoading && wx.hideLoading()
         }
