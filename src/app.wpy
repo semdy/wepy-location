@@ -149,9 +149,9 @@
   export default class extends wepy.app {
     config = {
       pages: [
+        'pages/login/login',
         'pages/home/home',
         'pages/detail/detail',
-        'pages/login/login',
         'pages/my/my'
       ],
       window: {
@@ -215,17 +215,17 @@
     }
 
     onShow() {
-      if (session.get()) {
+      /*if (session.get()) {
         updateToken().then(res => {
           let sessionInfo = session.get()
           sessionInfo.token = res.data.token
           session.set(sessionInfo)
         })
-      }
+      }*/
     }
 
     onHide() {
-      setLogout(false)
+      //setLogout(false)
     }
   }
 </script>

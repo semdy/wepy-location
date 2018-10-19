@@ -79,9 +79,9 @@
         default: ''
       },
       show: {
-        type: String,
-        default: 'false',
-        coerce: (t) => JSON.parse(t)
+        type: [Boolean, String],
+        default: false,
+        coerce: (t) => typeof t === 'string' ? JSON.parse(t) : t
       },
       title: {
         type: String,

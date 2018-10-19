@@ -118,11 +118,12 @@
 
       this.isLogining = true
       let params = {phone: this.mobile, password: this.password}
+      return this.$navigate('/pages/home/home')
       try {
         let res = await login(params)
         this.isLogining = false
         session.set({...userInfo, ...res.data})
-        this.$switch('/pages/home/home')
+        this.$navigate('/pages/home/home')
       } catch (e) {
         this.isLogining = false
       }
