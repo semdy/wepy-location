@@ -86,7 +86,7 @@
 </style>
 
 <template>
-  <view class="button {{inline ? 'inline' : ''}} {{disabled ? 'disabled' : ''}} {{size}} {{type}}" style="{{style}}" @tap="tap">
+  <view class="button {{inline ? 'inline' : ''}} {{disabled ? 'disabled' : ''}} {{size}} {{type}} {{className}}" style="{{style}}" @tap="tap">
     <icon wx:if="{{icon}}" :name="icon" :size="size"></icon>
     <slot></slot>
     {{text}}
@@ -100,6 +100,10 @@
   export default class Button extends wepy.component {
     props = {
       style: {
+        type: String,
+        default: ''
+      },
+      className: {
         type: String,
         default: ''
       },
