@@ -60,6 +60,10 @@
     &.plain {
       background-color: #fff;
       border-color: #ccc;
+
+      &:active{
+        border-color: #aaa;
+      }
     }
     &.disabled {
       background-color: #ccc;
