@@ -57,6 +57,10 @@
         background-color: darken(#e5e5e5, 10%);
       }
     }
+    &.plain {
+      background-color: #fff;
+      border-color: #ccc;
+    }
     &.disabled {
       background-color: #ccc;
       pointer-events: none;
